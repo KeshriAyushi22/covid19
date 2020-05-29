@@ -12,7 +12,7 @@ const Chart = () => {
      * async function and then awaits for its resp and set it 
      * 
      */
-    useEffect(() => {
+    useEffect(() => {  //use effect cant be async as it takes pure function, so inside it we made an async fnctn
 //will continue hitting the api -wont stop
         const fetchAPI = async () => {
             setDailyData(await fetchDailyData());
