@@ -1,21 +1,25 @@
 import React ,{useState,useEffect} from 'react';
 import {NativeSelect,FormControl} from "@material-ui/core"
 import styles from './CountryPicker.module.css'
-import {countries} from "../../api"
-const CountryPicker =()=>{
+import {getCountries} from "../../api"
+const CountryPicker =({handleCountryChange})=>{
 
-    const [countries,setCountries] =useState([]);
+    const [fetchedCountries,setCountries] =useState([]);
  useEffect(()=>{
-     const fetchCountries =async ()=>{
-
+     const fetchAPI =async ()=>{
+    
+        setCountries(await getCountries())
      }
- })
-
+     fetchAPI();
+ },[setCountries])   //if value in this array changes only then useEffect will run
 
     return (
-       <FormControl>
-           <NativeSelect>
-               <option value="global">Global</option>
+       <FormControl className={styles.FormControl}>
+           <NativeSelect defaultValue='' onChange={(e)=>{handleCountryChange(e.target.value)}}>
+               <option value="">Global</option>
+            { fetchedCountries.map((country,index)=>
+                 <option value={country} key={index}>{country}</option>)
+            }
            </NativeSelect>
        </FormControl>
     )

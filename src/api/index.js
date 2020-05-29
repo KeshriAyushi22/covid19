@@ -2,10 +2,14 @@ import axios from 'axios';
 
 const url ="https://covid19.mathdro.id/api";
 
-export const fetchData = async () =>{
+export const fetchData = async (country) =>{
+    let changeableUrl =url;
+    if(country){
+        changeableUrl=`${url}/countries/${country}`
+    }
 try{
     //deconstructed the resData and return only required info
-    const {data :{confirmed,recovered,deaths,lastUpdate}}= await axios.get(url);
+    const {data :{confirmed,recovered,deaths,lastUpdate}}= await axios.get(changeableUrl);
     return ({confirmed,recovered,deaths,lastUpdate})
 }catch(error){
     console.log(error);
@@ -15,13 +19,14 @@ try{
 export const fetchDailyData= async()=>{
     try{
         const {data}= await axios.get(`${url}/daily`);
+        //console.log(data)
          const modifiedData= data.map((dailyData)=>({
              //returning object
              confirmed:dailyData.confirmed.total,
-             deaths:dailyData.deaths.toatl,
+             deaths:dailyData.deaths.total,
              date:dailyData.reportDate
          }));
-
+        //console.log(modifiedData)
          return modifiedData
     }
     catch(error){
@@ -29,11 +34,15 @@ export const fetchDailyData= async()=>{
     }
 }
 
-export const countries= async()=>{
+export const getCountries= async()=>{
     try{
-        const res= await axios.get(`${url}/countries`)
+        const {data:{countries}}= await axios.get(`${url}/countries`)
+    //we want only name of each country
+   const countriesName= countries.map((country)=>country.name)
+       return (countriesName)
     }
     catch(error){
         console.log(error);
     }
 }
+

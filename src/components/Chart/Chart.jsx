@@ -4,7 +4,7 @@ import {Line,Bar} from "react-chartjs-2";
 import styles from "./Chart.module.css"
 
 
-const Chart = () => {
+const Chart = ({data:{confirmed,deaths,recovered},countrySelected}) => {
     const [dailyData, setDailyData] = useState({});
     /** we cant use async with use effect as it takes pure
      * function as a parameter.
@@ -12,13 +12,14 @@ const Chart = () => {
      * async function and then awaits for its resp and set it 
      * 
      */
-    useEffect(() => {  //use effect cant be async as it takes pure function, so inside it we made an async fnctn
-//will continue hitting the api -wont stop
+    useEffect(() => { 
+         //use effect cant be async as it takes pure function, so inside it we made an async fnctn
+        //will continue hitting the api -wont stop
         const fetchAPI = async () => {
             setDailyData(await fetchDailyData());
         }
         fetchAPI();
-    })
+    },[])
 
     const lineChart=(
         dailyData.length
@@ -31,21 +32,52 @@ const Chart = () => {
                  borderColor:'#3333ff',
                  fill:true,
              },{
-                data:dailyData.map(({confirmed})=>confirmed),
+                data:dailyData.map(({deaths})=>deaths),
                 label:'Deaths',
                 borderColor:'#3333ff',
-                backgroundColor:'red',
+                backgroundColor:'rgb(255,0,0,0.5)',
                 fill:true,
              }]
          }}/>)
          :null
         );
+
+    const barChart =(
+        confirmed
+        ?(
+        <Bar
+            data={{
+                labels:['Infected','Recovered','Deaths'],
+                datasets:[{
+                    label:'People',
+                    backgroundColor:[
+                        'rgba(0,0,255,0.5)',
+                        'rgba(0,255,0,0.5)',
+                        'rgba(255,0,0,0.5)'
+                    ],
+                    data:[confirmed.value,recovered.value,deaths.value]
+                }]
+            }}
+            options={{
+                legend :{display:false},
+                title:{display:true,text:`Current state in ${countrySelected}`}
+            }}
+        />
+        ):null
+    );
+
+
     
         return (
       <div className={styles.container}>
-          {lineChart}
+          {console.log(confirmed,deaths,recovered)}
+       {countrySelected
+        ? barChart
+        : lineChart
+        }
       </div>
     )
 }
+
 
 export default Chart;
